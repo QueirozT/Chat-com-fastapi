@@ -1,6 +1,6 @@
 name: Integração Manual
 
-on: workflows_dispatch
+on: workflow_dispatch
 
 jobs:
   build:
@@ -10,5 +10,5 @@ jobs:
       - uses: akhileshns/heroku-deploy@v3.12.12
         with:
           heroku_api_key: ${{secrets.HEROKU_API_KEY}}
-          heroku_app_name: "YOUR APP's NAME"
-          heroku_email: "YOUR EMAIL"
+          heroku_app_name: "chat-com-fastapi"
+          heroku_email: "tiagoqueirozgoncalves100@gmail.com"
