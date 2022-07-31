@@ -58,7 +58,7 @@ def route(request: Request, response_classe=HTMLResponse):
     )
 
 
-@app.websocket('/ws/{user}')
+@app.websocket('/{user}')
 async def push_endpoint(
         websocket: WebSocket,
         user: str,
