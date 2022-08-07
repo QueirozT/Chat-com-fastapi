@@ -3,7 +3,7 @@ from fastapi import (
 )
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
-from manager import ws_manager
+from .manager import ws_manager
 
 
 app = FastAPI()
@@ -24,11 +24,11 @@ def route(request: Request, response_classe=HTMLResponse):
 
 @app.websocket('/chat')
 async def push_endpoint(websocket: WebSocket):
-    user = user.replace('{', '').replace('}', '')
-    await ws_manager.connect(websocket, user)
     try:
+        await ws_manager.connect(websocket)
+        
         while True:
             data = await websocket.receive_text()
             await ws_manager.broadcast(data)
     except WebSocketDisconnect:
-        await ws_manager.disconnect(websocket, user)
+        await ws_manager.disconnect(websocket)
