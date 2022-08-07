@@ -374,52 +374,52 @@
         function makeAlert(msg) {
         msgData.value = ''
 
-        if (telaChat.classList.contains('hidden1')) {
-            telaChat.classList.replace('hidden1', 'hidden');
-        }
-        if (telaLogin.classList.contains('hidden')) {
-            telaLogin.classList.replace('hidden', 'hidden1');
-        }
+            if (telaChat.classList.contains('hidden1')) {
+                telaChat.classList.replace('hidden1', 'hidden');
+            }
+            if (telaLogin.classList.contains('hidden')) {
+                telaLogin.classList.replace('hidden', 'hidden1');
+            }
 
-        alerta.innerText = msg;
+            alerta.innerText = msg;
 
-        if (alerta.classList.contains('hidden')) {
-        alerta.classList.replace('hidden', 'hidden1');
-        }
+            if (alerta.classList.contains('hidden')) {
+                alerta.classList.replace('hidden', 'hidden1');
+            }
         }
 
         // Validação inicial
         btnEntrar.addEventListener('click', () => {
-        if (nick.value != '') {
-
-            // loadChat()
-            joinChat() // Conectando ao websocket
-
-        } else {
-            alerta.innerText = 'Escolha um apelido';
-            alerta.classList.replace('hidden', 'hidden1');
-        }
-        })
-        nick.addEventListener('keypress', function(e){
-        if(e.which == 13){
             if (nick.value != '') {
 
-            // loadChat()
-            joinChat() // Conectando ao websocket
-        
+                // loadChat()
+                joinChat() // Conectando ao websocket
+
             } else {
-            alerta.innerText = 'Escolha um apelido';
-            alerta.classList.replace('hidden', 'hidden1');
+                alerta.innerText = 'Escolha um apelido';
+                alerta.classList.replace('hidden', 'hidden1');
             }
-        }
+        })
+        nick.addEventListener('keypress', function(e){
+            if(e.which == 13){
+                if (nick.value != '') {
+
+                // loadChat()
+                joinChat() // Conectando ao websocket
+            
+                } else {
+                alerta.innerText = 'Escolha um apelido';
+                alerta.classList.replace('hidden', 'hidden1');
+                }
+            }
         })
 
 
         // Removendo o alerta ao digitar no campo de apelido
         nick.addEventListener('click', (e) => {
-        if (alerta.classList.contains('hidden1')) {
-            alerta.classList.replace('hidden1', 'hidden');
-        }
+            if (alerta.classList.contains('hidden1')) {
+                alerta.classList.replace('hidden1', 'hidden');
+            }
         })
 
 
@@ -429,167 +429,169 @@
 
         function criarMensagem(ws) {
 
-        var sendMsg = JSON.stringify({
-            type: 'msg',
-            nick: nick.value,
-            msg: msg.value,
-            date: new Date().getHours() + ':' + new Date().getMinutes()
-        })
+            var sendMsg = JSON.stringify({
+                type: 'msg',
+                nick: nick.value,
+                msg: msg.value,
+                date: new Date().getHours() + ':' + new Date().getMinutes()
+            })
 
-        ws.send(sendMsg)
-
-        // mensagemSelf(sendMsg)
-        // mensagemOthers(sendMsg)
-        // mensagemAlert(sendMsg)
+            ws.send(sendMsg)
         }
 
 
         // Funções de recebido de mensagens
 
         function mensagemSelf(doc) {
-        var doc = JSON.parse(doc.data)
+            var doc = JSON.parse(doc.data)
 
-        var div = document.createElement('div')
-        var message = document.createElement('p')
-        
-        div.classList.add('bubble')
-        div.classList.add('bubble-alt')
-        div.classList.add('green')
-        
-        message.append(doc['msg'])
+            var div = document.createElement('div')
+            var message = document.createElement('p')
+            
+            div.classList.add('bubble')
+            div.classList.add('bubble-alt')
+            div.classList.add('green')
+            
+            message.append(doc['msg'])
 
-        div.appendChild(message)
-        mensagens.appendChild(div)
-        mensagens.scrollTop = mensagens.scrollHeight
+            div.appendChild(message)
+            mensagens.appendChild(div)
+            mensagens.scrollTop = mensagens.scrollHeight
         }
 
 
         function mensagemOthers(doc) {
-        var doc = JSON.parse(doc.data)
+            var doc = JSON.parse(doc.data)
 
-        var div = document.createElement('div')
-        var data = document.createElement('p')
-        var message = document.createElement('p')
-        
-        div.classList.add('bubble')
-        
-        data.classList.add('data')
-        data.append(doc['nick'] + ' ' + doc['date'])
+            var div = document.createElement('div')
+            var data = document.createElement('p')
+            var message = document.createElement('p')
+            
+            div.classList.add('bubble')
+            
+            data.classList.add('data')
+            data.append(doc['nick'] + ' ' + doc['date'])
 
-        message.append(doc['msg'])
+            message.append(doc['msg'])
 
-        div.appendChild(data)
-        div.appendChild(message)
-        mensagens.appendChild(div)
-        mensagens.scrollTop = mensagens.scrollHeight
+            div.appendChild(data)
+            div.appendChild(message)
+            mensagens.appendChild(div)
+            mensagens.scrollTop = mensagens.scrollHeight
         }
 
 
         function mensagemAlert(doc) {
-        var doc = JSON.parse(doc.data)
+            var doc = JSON.parse(doc.data)
 
-        var div = document.createElement('div')
-        var message = document.createElement('p')
-        
-        div.classList.add('central')
-        
-        message.append(doc['msg'])
+            var div = document.createElement('div')
+            var message = document.createElement('p')
+            
+            div.classList.add('central')
+            
+            message.append(doc['msg'])
 
-        div.appendChild(message)
-        mensagens.appendChild(div)
-        mensagens.scrollTop = mensagens.scrollHeight
+            div.appendChild(message)
+            mensagens.appendChild(div)
+            mensagens.scrollTop = mensagens.scrollHeight
         }
 
 
         // WebSockets
         function joinChat() {
-        var host = location.host;
+            var alerta = ''
 
-        if (window.location.protocol == "https:") {
-            var ws_scheme = "wss://";
-        } else {
-            var ws_scheme = "ws://"
-        }
+            var host = location.host;
 
-        var ws = new WebSocket(ws_scheme + host + "/chat")
-
-        ws.onopen = function () {
-            ws.send(JSON.stringify({
-            type: 'join',
-            nick: nick.value
-            })
-            )
-        }
-
-        ws.onmessage = function(doc) {
-            try {
-            var recDoc = JSON.parse(doc.data)
-            } catch (e) {
-            return
-            }
-
-            if (recDoc['type'] == 'join') {
-            if (recDoc['nick'] != nick.value) {
-                mensagemAlert(doc)
+            if (window.location.protocol == "https:") {
+                var ws_scheme = "wss://";
             } else {
-                loadChat()
-            }
-            }
-
-            if (recDoc['type'] == 'info') {
-            makeAlert(recDoc['msg'])
+                var ws_scheme = "ws://"
             }
 
-            if (recDoc['type'] == 'msg') {
-            if (recDoc['nick'] == nick.value) {
-                mensagemSelf(doc)
-            }
-            else {
-                mensagemOthers(doc)
-            }
-            }
-        }
+            var ws = new WebSocket(ws_scheme + host + "/chat/" + nick.value)
 
-
-
-        // Área de mensagens
-
-        btnSend.addEventListener('click', () => {
-            if (msgData.value != '') {
-            criarMensagem(ws)
-
-            // var sendMsg = JSON.stringify({
-            //   type: 'msg',
-            //   nick: nick.value,
-            //   msg: msg.value,
-            //   date: new Date().getHours() + ':' + new Date().getMinutes()
-            // })
-
-            // ws.send(sendMsg)
+            // // ABERTURA DE HANDSHAKE
+            // ws.onopen = function () {
+            //     ws.send(JSON.stringify({
+            //         type: 'join',
+            //         nick: nick.value
+            //         })
+            //     )
+            // }
 
             
-            msgData.value = ''
+            ws.onclose = function() {
+                if (alerta == '') {
+                    makeAlert('Desconectado do servidor!')
+                } else {
+                    makeAlert(alerta)
+                    alerta = ''
+                }
+                ws = null
             }
-        })
-        msgData.addEventListener('keypress', function(e){
-            if(e.which == 13){
-            if (msgData.value != '') {
-                criarMensagem(ws)  
-                
+
+
+            ws.onerror = function() {
+                location.reload();
+            }
+
+
+            ws.onmessage = function(doc) {
+                try {
+                    var recDoc = JSON.parse(doc.data)
+                } catch (e) {
+                    return
+                }
+
+                if (recDoc['type'] == 'join') {
+                    if (recDoc['nick'] != nick.value) {
+                        mensagemAlert(doc)
+                    } else {
+                        loadChat()
+                    }
+                }
+
+                if (recDoc['type'] == 'info') {
+                    alerta = recDoc['msg']
+                    ws.close()
+                }
+
+                if (recDoc['type'] == 'msg') {
+                    if (recDoc['nick'] == nick.value) {
+                        mensagemSelf(doc)
+                    } else {
+                        mensagemOthers(doc)
+                    }
+                }
+            }
+
+
+            // Área de mensagens
+            function criarMensagem() {
+                var sendMsg = JSON.stringify({
+                    type: 'msg',
+                    nick: nick.value,
+                    msg: msg.value,
+                    date: new Date().getHours() + ':' + new Date().getMinutes()
+                })
+
+                ws.send(sendMsg)
                 msgData.value = ''
             }
-            }
-        })
 
-
-        ws.onclose = function() {
-            location.reload()
-            makeAlert('Desconectado do Servidor')
-        }
-
-        ws.onerror = function() {
-            location.reload();
-        }
+            btnSend.addEventListener('click', () => {
+                if (msgData.value != '') {
+                    criarMensagem()
+                }
+            })
+            msgData.addEventListener('keypress', function(e){
+                if(e.which == 13) {
+                    if (msgData.value != '') {
+                        criarMensagem()
+                    }
+                }
+            })
         }
 
 
