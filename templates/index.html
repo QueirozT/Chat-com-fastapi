@@ -35,6 +35,7 @@
                 } else {
                     ws_scheme = "ws://"
                 };
+                
                 var ws = new WebSocket(ws_scheme + host + "/{" + name + "}");
 
                 ws.onclose = function () {
