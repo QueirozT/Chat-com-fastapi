@@ -1,7 +1,9 @@
 from asyncio import sleep
 from fastapi import (
-    FastAPI, Request, WebSocket, WebSocketDisconnect
+    FastAPI, Request
 )
+from fastapi.websockets import WebSocket
+from fastapi.staticfiles import StaticFiles
 from fastapi.responses import HTMLResponse
 from fastapi.templating import Jinja2Templates
 
@@ -11,6 +13,9 @@ from .manager import ws_manager, echo_manager
 app = FastAPI()
 
 # StartApp: uvicorn app:app --port 8000
+
+# Staticos
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Template
 templates = Jinja2Templates(directory='templates')
