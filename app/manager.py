@@ -46,13 +46,13 @@ class ConnectionManager:
         if websocket in self.connections:
             index = self.connections.index(websocket)
             self.connections.pop(index)
-            usr = self.users.pop(index)
+            self.usr = self.users.pop(index)
 
         await self.broadcast(
             json.dumps({
                 "type": "join",
-                "nick": usr,
-                "msg": f"{usr} Saiu da sala!"
+                "nick": self.usr,
+                "msg": f"{self.usr} Saiu da sala!"
             })
         )
 
