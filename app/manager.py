@@ -1,5 +1,5 @@
 from asyncio import sleep
-from fastapi import WebSocket, WebSocketDisconnect
+from fastapi import WebSocket
 
 import json
 
