@@ -1,4 +1,5 @@
-from fastapi import status
+from asyncio import sleep
+from fastapi import WebSocket, WebSocketDisconnect
 
 import json
 
@@ -6,55 +7,92 @@ import json
 # Gerenciador de conexões
 class ConnectionManager:
     def __init__(self):
-        self.connections = []
-        self.users = []
+        self.connections = {}
 
-    async def connect(self, websocket):
+    async def connect(self, websocket: WebSocket, nick: str):
         await websocket.accept()
-        data = await websocket.receive_text()
-        data = json.loads(data)
+        # data = await websocket.receive_text()
 
-        if data["type"] == "join":
-            if data["nick"] in self.users:
-                await websocket.send_text(
-                    json.dumps({
-                        "type": "info", 
-                        "msg": f"{data['nick']} Já está na sala."
-                    })
-                )
-                return
-            else:
-                self.users.append(data["nick"])
-                self.connections.append(websocket)
-                await self.broadcast(
-                    json.dumps({
-                        "type": "join", 
-                        "nick": data["nick"],
-                        "msg": f"{data['nick']} Entrou na sala!"
-                    })
-                )
+        if nick not in [conn[1] for conn in self.connections.values()]:
+            self.connections[websocket] = [websocket, nick]
+
+            await self.broadcast(
+                json.dumps({
+                    "type": "join", 
+                    "nick": nick,
+                    "msg": f"{nick} Entrou na sala!"
+                })
+            )
+
+            await self.chat(websocket)
         else:
-            await websocket.close(code=status.HTTP_403_FORBIDDEN)
+            await websocket.send_text(
+                json.dumps({
+                    "type": "info", 
+                    "msg": f"{nick} Já está na sala."
+                })
+            )
+
+
+    async def chat(self, websocket: WebSocket):
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await self.broadcast(data)
+        except:
+            await self.disconnect(websocket)
+
 
     async def broadcast(self, data):
         if self.connections:
-            for conn in self.connections:
+            for conn, _ in self.connections.items():
                 await conn.send_text(data)
 
+
     async def disconnect(self, websocket):
+        await sleep(0)
+        if self.connections.get(websocket):
+            nick = self.connections[websocket][1]
+            self.connections.pop(websocket)
 
-        if websocket in self.connections:
-            index = self.connections.index(websocket)
-            self.connections.pop(index)
-            self.usr = self.users.pop(index)
-
-        await self.broadcast(
-            json.dumps({
-                "type": "join",
-                "nick": self.usr,
-                "msg": f"{self.usr} Saiu da sala!"
-            })
-        )
+            await self.broadcast(
+                json.dumps({
+                    "type": "join",
+                    "nick": nick,
+                    "msg": f"{nick} Saiu da sala!"
+                })
+            )
 
 
 ws_manager = ConnectionManager()
+
+
+
+class EchoManager():
+    def __init__(self):
+        self.connections = []
+
+    async def connect(self, websocket: WebSocket):
+        self.connections.append(websocket)
+        
+        await websocket.accept()
+
+        await self.echo(websocket)
+
+    async def echo(self, websocket: WebSocket):
+        try:
+            while True:
+                data = await websocket.receive_text()
+                await self.broadcast(data)
+        except:
+            await self.disconnect(websocket)
+
+    async def disconnect(self, websocket):
+        self.connections.remove(websocket)
+
+    async def broadcast(self, data):
+        for conn in self.connections:
+            await conn.send_text(data)
+
+
+echo_manager = EchoManager()
