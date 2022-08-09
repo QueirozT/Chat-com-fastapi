@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "Chat-com-fastapi"
-version = "0.2.2"
+version = "0.2.3"
 description = ""
 authors = ["Thi <tiagoqueirozgoncalves100@gmail.com>"]
 
