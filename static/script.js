@@ -10,6 +10,8 @@ var mensagens = document.querySelector(".container")
 var msgData = document.querySelector('#msg')
 var btnSend = document.querySelector('#send')
 
+var ws = null  // Inicializando a variável websocket
+
 
 function loadChat() {
 
@@ -155,7 +157,7 @@ function joinChat() {
         var ws_scheme = "ws://"
     }
 
-    var ws = new WebSocket(ws_scheme + host + "/chat/" + nick.value)
+    ws = new WebSocket(ws_scheme + host + "/chat/" + nick.value)
 
     // // ABERTURA DE HANDSHAKE
     // ws.onopen = function () {
