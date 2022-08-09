@@ -13,24 +13,24 @@ var btnSend = document.querySelector('#send')
 
 function loadChat() {
 
-mensagens.innerHTML = ''
+    mensagens.innerHTML = ''
 
-if (alerta.classList.contains('hidden1')) {
-    alerta.classList.replace('hidden1', 'hidden');
-}
+    if (alerta.classList.contains('hidden1')) {
+        alerta.classList.replace('hidden1', 'hidden');
+    }
 
-if (telaLogin.classList.contains('hidden1')) {
-    telaLogin.classList.replace('hidden1', 'hidden');
-}
+    if (telaLogin.classList.contains('hidden1')) {
+        telaLogin.classList.replace('hidden1', 'hidden');
+    }
 
-if (telaChat.classList.contains('hidden')) {
-    telaChat.classList.replace('hidden', 'hidden1');
-}
+    if (telaChat.classList.contains('hidden')) {
+        telaChat.classList.replace('hidden', 'hidden1');
+    }
 }
 
 
 function makeAlert(msg) {
-msgData.value = ''
+    msgData.value = ''
 
     if (telaChat.classList.contains('hidden1')) {
         telaChat.classList.replace('hidden1', 'hidden');
@@ -49,10 +49,12 @@ msgData.value = ''
 // Validação inicial
 btnEntrar.addEventListener('click', () => {
     if (nick.value != '') {
+        if (ws != 'object') {
 
-        // loadChat()
-        joinChat() // Conectando ao websocket
+            // loadChat() // Carregava a tela de chat
 
+            joinChat() // Conectando ao websocket e carrega a tela
+        }
     } else {
         alerta.innerText = 'Escolha um apelido';
         alerta.classList.replace('hidden', 'hidden1');
@@ -61,10 +63,12 @@ btnEntrar.addEventListener('click', () => {
 nick.addEventListener('keypress', function(e){
     if(e.which == 13){
         if (nick.value != '') {
+            if (ws != 'object') {
 
-        // loadChat()
-        joinChat() // Conectando ao websocket
-    
+                // loadChat() // Carregava a tela de chat
+
+                joinChat() // Conectando ao websocket e carrega a tela
+            }
         } else {
         alerta.innerText = 'Escolha um apelido';
         alerta.classList.replace('hidden', 'hidden1');
@@ -80,22 +84,6 @@ nick.addEventListener('click', (e) => {
     }
 })
 
-
-
-
-// Tratamento de Mensagens
-
-function criarMensagem(ws) {
-
-    var sendMsg = JSON.stringify({
-        type: 'msg',
-        nick: nick.value,
-        msg: msg.value,
-        date: new Date().getHours() + ':' + new Date().getMinutes()
-    })
-
-    ws.send(sendMsg)
-}
 
 
 // Funções de recebido de mensagens
