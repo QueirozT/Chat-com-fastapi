@@ -37,3 +37,8 @@ async def push_endpoint(websocket: WebSocket, nick: str):
 @app.websocket('/echo')
 async def echo(websocket: WebSocket):
     await echo_manager.connect(websocket)
+
+
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=8000)
+    
